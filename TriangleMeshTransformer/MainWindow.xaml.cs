@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32;
+﻿using g3;
+using Geometry;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,6 +69,7 @@ namespace TriangleMeshTransformer
     /// </summary>
     public partial class MainWindow : Window
     {
+      private TriangleMeshManager managerMesh =new TriangleMeshManager();
       public  string filePathOpen=@"C:\";
       public IOpenFileDialog openFileDialog;
         public MainWindow()
@@ -105,6 +108,24 @@ namespace TriangleMeshTransformer
 
         public void addMesh(string pPath)
         {
+            //If pPath  is null or empty
+            if (string.IsNullOrEmpty(pPath))
+            {
+                MessageBox.Show("You shold select a valid file");
+                return;
+            }
+            //if pPath is in diccionary 
+            if (managerMesh.getSimpleMesh(pPath) != null)
+            {
+                MessageBox.Show("The file select is loading");
+                return;
+            }
+            //Loading mesh
+            DMesh3 mesh = StandardMeshReader.ReadMesh(pPath);
+            if (!managerMesh.AddTrianglesMesh(pPath, new CGeometry(mesh)))
+                return;
+
+
             //Creation of component
             Label lbWrapper = new Label
             {
@@ -134,10 +155,21 @@ namespace TriangleMeshTransformer
             };
             WrapPanel wrapBtns = new WrapPanel();
 
-            Button btnShow = new Button();
-            Button btnTranf = new Button();
-            Button btnDelete = new Button();
-            Button btnSave = new Button();
+            Button btnShow = new Button {
+                Tag = pPath,
+            };
+            Button btnTranf = new Button
+            {
+                Tag = pPath,
+            };
+            Button btnDelete = new Button
+            {
+                Tag = pPath,
+            };
+            Button btnSave = new Button()
+            {
+                Tag = pPath,
+            };
 
             BitmapImage bitmapShow = new BitmapImage();
             bitmapShow.BeginInit();
