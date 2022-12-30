@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TriangleMeshTransformer"
         mc:Ignorable="d"
-        Title="TriangleMeshTranformer" Height="200" Width="300">
+        Title="TriangleMeshTranformer" Height="350" Width="320">
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
@@ -24,29 +24,15 @@
                     </Button>
                     <Separator></Separator>
                 </ToolBar>
-                
-            </ToolBarTray>
 
-            <StackPanel x:Name="spMesh" Margin="10,10" >
-                <Label HorizontalContentAlignment="Right" >
-                    <WrapPanel  >
-                        <Button>
-                            <Image Width="20" Source="https://pic.onlinewebfonts.com/svg/img_416768.png"></Image>
-                        </Button>
-                        <Button>
-                            <Image Width="20" Source="https://pic.onlinewebfonts.com/svg/img_335840.png"></Image>
-                        </Button>
-                        <Button >
-                            <Image Width="20" Source="https://pic.onlinewebfonts.com/svg/img_659.png"></Image>
-                        </Button>
-                        <Button>
-                            <Image Width="20" Source="https://pic.onlinewebfonts.com/svg/img_115260.png"></Image>
-                        </Button>
-                    </WrapPanel>
-                </Label>
-                
-                
+            </ToolBarTray>
+            
+             <StackPanel x:Name="spMesh" Margin="10,10" >
+               
+
             </StackPanel>
+            
+
         </StackPanel>
        
     </DockPanel>

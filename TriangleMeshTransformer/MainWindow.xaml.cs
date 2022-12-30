@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -95,10 +96,134 @@ namespace TriangleMeshTransformer
             if (result == true)
             {
                 // Get the path of the selected file
-                filePathOpen = openFileDialog.FileName; 
+                filePathOpen = openFileDialog.FileName;
                 //LoadingFile and create Structure mesh
-               // MessageBox.Show(filePathOpen);
+                // MessageBox.Show(filePathOpen);
+                addMesh(filePathOpen);
             }
+        }
+
+        public void addMesh(string pPath)
+        {
+            //Creation of component
+            Label lbWrapper = new Label
+            {
+                BorderBrush = Brushes.Gray,
+                BorderThickness = new Thickness(1),
+            };
+            StackPanel spWrapper = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+            };
+            TextBlock tbNameFile = new TextBlock
+            {
+                Width = 130,
+                TextWrapping= TextWrapping.NoWrap,
+                TextTrimming=TextTrimming.CharacterEllipsis,
+                FontWeight=FontWeights.DemiBold,
+                FontSize=14,
+                VerticalAlignment=VerticalAlignment.Center,
+                TextAlignment=TextAlignment.Justify,
+                Text= pPath,
+            };
+
+            Label lbBtns = new Label
+            {
+                Width = 150,
+                HorizontalContentAlignment = HorizontalAlignment.Right,
+            };
+            WrapPanel wrapBtns = new WrapPanel();
+
+            Button btnShow = new Button();
+            Button btnTranf = new Button();
+            Button btnDelete = new Button();
+            Button btnSave = new Button();
+
+            BitmapImage bitmapShow = new BitmapImage();
+            bitmapShow.BeginInit();
+            bitmapShow.UriSource = new Uri("https://pic.onlinewebfonts.com/svg/img_416768.png");
+            bitmapShow.EndInit();
+            Image imgShow = new Image
+            {
+                Width = 20,
+                Source = bitmapShow,
+            };
+
+            BitmapImage bitmapTranf  = new BitmapImage();
+            bitmapTranf.BeginInit();
+            bitmapTranf.UriSource = new Uri("https://pic.onlinewebfonts.com/svg/img_335840.png");
+            bitmapTranf.EndInit();
+            Image imgTranf = new Image
+            {
+                Width = 20,
+                Source = bitmapTranf,
+            };
+
+            BitmapImage bitmapDel = new BitmapImage();
+            bitmapDel.BeginInit();
+            bitmapDel.UriSource = new Uri("https://pic.onlinewebfonts.com/svg/img_659.png");
+            bitmapDel.EndInit();
+            Image imgDel = new Image
+            {
+                Width = 20,
+                Source = bitmapDel,
+            };
+
+            BitmapImage bitmapSave = new BitmapImage();
+            bitmapSave.BeginInit();
+            bitmapSave.UriSource = new Uri("https://pic.onlinewebfonts.com/svg/img_115260.png");
+            bitmapSave.EndInit();
+            Image imgSave = new Image
+            {
+                Width = 20,
+                Source = bitmapSave,
+            };
+
+
+            //Nesting component
+            btnShow.Content = imgShow;
+            btnDelete.Content = imgDel;
+            btnSave.Content = imgSave;
+            btnTranf.Content = imgTranf;
+
+            wrapBtns.Children.Add(btnShow);
+            wrapBtns.Children.Add(btnTranf);
+            wrapBtns.Children.Add(btnDelete);
+            wrapBtns.Children.Add(btnSave);
+
+            lbBtns.Content = wrapBtns;
+            spWrapper.Children.Add(tbNameFile);
+            spWrapper.Children.Add(lbBtns);
+            lbWrapper.Content = spWrapper;
+            spMesh.Children.Add(lbWrapper);
+
+            /*< Label BorderBrush = "Gray" BorderThickness = "1" >
+               < StackPanel Orientation = "Horizontal" >
+                   < TextBlock Width = "130" TextWrapping = "NoWrap" TextTrimming = "CharacterEllipsis" FontWeight = "DemiBold" FontSize = "14" VerticalAlignment = "Center" TextAlignment = "Justify" > Esta es mi promera lista</ TextBlock >
+                   < Label  Width = "150" HorizontalContentAlignment = "Right" >
+                       < WrapPanel >
+                           < Button >
+                               < Image Width = "20" Source = "https://pic.onlinewebfonts.com/svg/img_416768.png" ></ Image >
+                           </ Button >
+
+
+                           < Button >
+                               < Image Width = "20" Source = "https://pic.onlinewebfonts.com/svg/img_335840.png" ></ Image >
+                           </ Button >
+
+
+                           < Button >
+                               < Image Width = "20" Source = "https://pic.onlinewebfonts.com/svg/img_659.png" ></ Image >
+                           </ Button >
+                           < Button >
+                               < Image Width = "20" Source = "https://pic.onlinewebfonts.com/svg/img_115260.png" ></ Image >
+                           </ Button >
+                       </ WrapPanel >
+                   </ Label >
+
+               </ StackPanel >
+           </ Label >*/
+
         }
     }
 }
