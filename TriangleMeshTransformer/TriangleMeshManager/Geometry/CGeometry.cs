@@ -10,7 +10,7 @@ using System.Xml.Linq;
 
 namespace Geometry
 {
-    internal class CGeometry : ICloneable, ISimpleMesh<Vector3d, Index3i>
+    public class CGeometry : ICloneable, ISimpleMesh<Vector3d, Index3i>
     {
         private readonly DMesh3 mesh;
 

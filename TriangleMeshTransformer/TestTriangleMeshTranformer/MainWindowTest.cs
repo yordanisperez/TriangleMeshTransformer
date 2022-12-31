@@ -13,7 +13,7 @@ namespace TestTriangleMeshTransformer
     public class MainWindowsTest
     {
         [TestMethod]
-        public void testMiOpen_Click()
+        public void TestMiOpen_Click()
         {
             
             // Create a mock of the FileDialog
@@ -24,12 +24,13 @@ namespace TestTriangleMeshTransformer
             fileDialogMock.Setup(x => x.InitialDirectory).Returns("");
             fileDialogMock.Setup(x => x.Filter).Returns("");
             fileDialogMock.SetupGet(x => x.FileName).Returns(@"C:\myfile.txt");
-           // fileDialogMock.SetupGet(x => x.FileNames).Returns(@"C:\myfile.txt");
+            // fileDialogMock.SetupGet(x => x.FileNames).Returns(@"C:\myfile.txt");
             // Create an instance of the MainWindow class
-            MainWindow mainWindow = new MainWindow();
-
-            // Set the FileDialog property to the mock
-            mainWindow.openFileDialog = (IOpenFileDialog) fileDialogMock.Object;
+            MainWindow mainWindow = new MainWindow
+            {
+                // Set the FileDialog property to the mock
+                openFileDialog = (IOpenFileDialog)fileDialogMock.Object
+            };
 
 
             // Simulate the OpenFileButton_Click event
@@ -41,7 +42,7 @@ namespace TestTriangleMeshTransformer
 
         }
         [TestMethod]
-       public void testAddMesh()
+       public void TestAddMesh()
         {
             List<Vector3d> vertices = new List<Vector3d>
             {
@@ -59,12 +60,15 @@ namespace TestTriangleMeshTransformer
             };
           DMesh3 meshTest= DMesh3Builder.Build<Vector3d, Index3i, Vector3d>(vertices, triangles);
             //create mock static class
-            var myClassMock = new Mock<iCallMethodStatic>();
+            var myCallMethodStaticMock = new Mock<iCallMethodStatic>();
             //add method for create mesh
-            myClassMock.Setup(x => x.ReadMesh(It.IsAny<string>())).Returns(meshTest);
+            myCallMethodStaticMock.Setup(x => x.ReadMesh(It.IsAny<string>())).Returns(meshTest);
+            myCallMethodStaticMock.Setup(x => x.Show(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MessageBoxButton>())).Returns(MessageBoxResult.Yes);
 
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.staticCall =(iCallMethodStatic) myClassMock.Object;
+            MainWindow mainWindow = new MainWindow
+            {
+                staticCall = (iCallMethodStatic)myCallMethodStaticMock.Object
+            };
 
             mainWindow.addMesh("OneMesh");
             //Is add the meh correcty

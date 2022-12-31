@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		readme.md = readme.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTriangleMeshTransformer", "TestTriangleMeshTransformer\TestTriangleMeshTransformer.csproj", "{7CE8D19F-8F55-4D5E-8959-306E0A30A995}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTriangleMeshTranformer", "TriangleMeshTransformer\TestTriangleMeshTranformer\TestTriangleMeshTranformer.csproj", "{5CE5A134-9D1E-4073-8163-904924E0A199}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,10 +22,10 @@ Global
 		{126F1436-72AE-4935-B544-3B94B31485D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{126F1436-72AE-4935-B544-3B94B31485D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{126F1436-72AE-4935-B544-3B94B31485D1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7CE8D19F-8F55-4D5E-8959-306E0A30A995}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7CE8D19F-8F55-4D5E-8959-306E0A30A995}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7CE8D19F-8F55-4D5E-8959-306E0A30A995}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7CE8D19F-8F55-4D5E-8959-306E0A30A995}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CE5A134-9D1E-4073-8163-904924E0A199}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CE5A134-9D1E-4073-8163-904924E0A199}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CE5A134-9D1E-4073-8163-904924E0A199}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CE5A134-9D1E-4073-8163-904924E0A199}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -68,8 +68,32 @@ namespace TriangleMeshTransformer
 
     public interface iCallMethodStatic
     {
+        /// <summary>
+        /// Read un file from path pFile
+        /// </summary>
+        /// <param name="pFile"></param>
+        /// <returns></returns>
          DMesh3 ReadMesh(String pFile);
+        // Summary:
+        //     Displays a message box that has a message, title bar caption, and button; and
+        //     that returns a result.
+        //
+        // Parameters:
+        //   messageBoxText:
+        //     A System.String that specifies the text to display.
+        //
+        //   caption:
+        //     A System.String that specifies the title bar caption to display.
+        //
+        //   button:
+        //     A System.Windows.MessageBoxButton value that specifies which button or buttons
+        //     to display.
+        //
+        // Returns:
+        //     A System.Windows.MessageBoxResult value that specifies which message box button
+        //     is clicked by the user.        MessageBoxResult Show(string message, string caption, MessageBoxButton button);
 
+        MessageBoxResult Show(string message, string caption, MessageBoxButton button);
     }
     /// <summary>
     /// CallMethodStatic is need for Testing the call and can mock
@@ -81,6 +105,10 @@ namespace TriangleMeshTransformer
      public   DMesh3 ReadMesh(String pFile)
         {
             return StandardMeshReader.ReadMesh(pFile);
+        }
+     public MessageBoxResult Show(string message, string caption, MessageBoxButton button)
+        {
+            return MessageBox.Show(message, caption, button);
         }
     }
 
@@ -103,13 +131,15 @@ namespace TriangleMeshTransformer
 
         }
 
+        /// <summary>
+        /// Determines  whether the diccionary contain with pHash specified
+        /// </summary>
+        /// <param name="pHash"> string key of diccionary</param>
+        /// <returns> Return true if pPatch in meshs diccionary, otherwise false</returns>
         public bool existMesh(string pHash)
         {
-            if (managerMesh.getSimpleMesh(pHash)==null)
-            {
-                return false;
-            }
-            return true;
+            return managerMesh.isPathExist(pHash);
+          
         }
 
         public void testMiOpen_Click(object sender, RoutedEventArgs e)
@@ -148,17 +178,17 @@ namespace TriangleMeshTransformer
             //If pPath  is null or empty
             if (string.IsNullOrEmpty(pPath))
             {
-                MessageBox.Show("You shold select a valid file");
+                staticCall.Show("You should select a valid file","Add Mesh", MessageBoxButton.OK);   
                 return;
             }
             //if pPath is in diccionary 
-            if (managerMesh.getSimpleMesh(pPath) != null)
+            if (managerMesh.isPathExist(pPath) ==true)
             {
-                MessageBox.Show("The file select is loading");
+                staticCall.Show("The file select is loading", "Add Mesh", MessageBoxButton.OK);
                 return;
             }
             //Loading mesh
-            CallMethodStatic staticCall = new CallMethodStatic();
+            
             DMesh3 mesh = staticCall.ReadMesh(pPath);
             if (!managerMesh.AddTrianglesMesh(pPath, new CGeometry(mesh)))
                 return;

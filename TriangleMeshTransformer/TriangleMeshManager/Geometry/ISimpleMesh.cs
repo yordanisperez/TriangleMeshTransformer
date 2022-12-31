@@ -11,7 +11,7 @@ namespace Geometry
     /// </summary>
     /// <typeparam name="VType"> VType soport Vector3d and Vector3f</typeparam>
     /// <typeparam name="TType"> TType soport Vector3i and Index3i</typeparam>
-    internal interface ISimpleMesh<VType, TType>
+    public interface ISimpleMesh<VType, TType>
     {
         /// <summary>
         /// All the vertex of geometry

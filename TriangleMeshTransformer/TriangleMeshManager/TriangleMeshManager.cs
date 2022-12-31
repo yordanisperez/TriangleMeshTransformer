@@ -8,7 +8,7 @@ using Geometry;
 
 namespace TriangleMeshTransformer
 {
-    internal class TriangleMeshManager
+    public class TriangleMeshManager
     {
         private Dictionary<string, ISimpleMesh<Vector3d, Index3i>> meshs =null;
        public TriangleMeshManager()
@@ -56,6 +56,15 @@ namespace TriangleMeshTransformer
                 return meshs[pPath];
             }
             return null;
+        }
+        /// <summary>
+        /// Determines  whether the diccionary contain with pPath specified
+        /// </summary>
+        /// <param name="pPath"> string key of diccionary</param>
+        /// <returns> Return true if pPatch in meshs diccionary, otherwise false</returns>
+        public bool isPathExist(string pPath)
+        {
+            return meshs.ContainsKey(pPath);
         }
     }
 }

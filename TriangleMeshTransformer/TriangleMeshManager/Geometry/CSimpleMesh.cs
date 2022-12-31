@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Geometry
 {
-    internal class CSimpleMesh : ISimpleMesh<Vector3d, Index3i>
+    public class CSimpleMesh : ISimpleMesh<Vector3d, Index3i>
     {
         private readonly List<Vector3d> vertices =null;
         private readonly List<Index3i> triangles=null;
