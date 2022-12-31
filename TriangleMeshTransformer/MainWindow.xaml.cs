@@ -3,6 +3,7 @@ using Geometry;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime;
 using System.Text;
@@ -16,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+
 
 namespace TriangleMeshTransformer
 {
@@ -64,6 +66,24 @@ namespace TriangleMeshTransformer
         }
     }
 
+    public interface iCallMethodStatic
+    {
+         DMesh3 ReadMesh(String pFile);
+
+    }
+    /// <summary>
+    /// CallMethodStatic is need for Testing the call and can mock
+    /// </summary>
+    /// 
+    public class CallMethodStatic: iCallMethodStatic
+    {
+        public CallMethodStatic() { }
+     public   DMesh3 ReadMesh(String pFile)
+        {
+            return StandardMeshReader.ReadMesh(pFile);
+        }
+    }
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -72,15 +92,31 @@ namespace TriangleMeshTransformer
       private TriangleMeshManager managerMesh =new TriangleMeshManager();
       public  string filePathOpen=@"C:\";
       public IOpenFileDialog openFileDialog;
+      public iCallMethodStatic staticCall ;
+
         public MainWindow()
         {
             InitializeComponent();
             // Create an instance of the OpenFileDialog
             openFileDialog = new OpenFileDialogContainer(new OpenFileDialog()) ;
+            staticCall = new CallMethodStatic();
 
         }
 
-        public void miOpen_Click(object sender, RoutedEventArgs e)
+        public bool existMesh(string pHash)
+        {
+            if (managerMesh.getSimpleMesh(pHash)==null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public void testMiOpen_Click(object sender, RoutedEventArgs e)
+        {
+            miOpen_Click(sender, e);
+        }
+        private void miOpen_Click(object sender, RoutedEventArgs e)
         {
 
             // Set the filter for the file extension
@@ -106,6 +142,7 @@ namespace TriangleMeshTransformer
             }
         }
 
+        
         public void addMesh(string pPath)
         {
             //If pPath  is null or empty
@@ -121,7 +158,8 @@ namespace TriangleMeshTransformer
                 return;
             }
             //Loading mesh
-            DMesh3 mesh = StandardMeshReader.ReadMesh(pPath);
+            CallMethodStatic staticCall = new CallMethodStatic();
+            DMesh3 mesh = staticCall.ReadMesh(pPath);
             if (!managerMesh.AddTrianglesMesh(pPath, new CGeometry(mesh)))
                 return;
 
