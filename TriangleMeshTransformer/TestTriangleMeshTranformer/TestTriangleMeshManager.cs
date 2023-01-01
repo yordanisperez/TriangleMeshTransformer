@@ -2,7 +2,6 @@
 using Geometry;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
-using System.Dynamic;
 using TriangleMeshTransformer;
 
 
