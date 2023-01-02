@@ -1,0 +1,38 @@
+﻿<Window x:Class="TriangleMeshTransformer.WindowsTransformerMesh"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TriangleMeshTransformer"
+        mc:Ignorable="d"
+        Title="TransformerMesh"  Height="150" Width="210">
+    <StackPanel>
+        <Label HorizontalContentAlignment="Stretch" FontSize="12" ToolTip="Set Number cell in this tranform">
+            <Grid HorizontalAlignment="Stretch"  ShowGridLines="True">
+                <Grid.ColumnDefinitions >
+                    <ColumnDefinition Width="2*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock VerticalAlignment="Center"  FontSize="14" FontWeight="Bold" Grid.Column="0">Number Cell:</TextBlock>
+                <TextBox Height="25"  VerticalContentAlignment="Center"  FontSize="14" Grid.Column="1" HorizontalAlignment="Stretch"  x:Name="tbNumberCell" TextChanged="tbNumberCell_TextChanged" >128</TextBox>
+            </Grid>
+        </Label>
+        <Label HorizontalContentAlignment="Stretch" FontSize="12" ToolTip="Set cube size in this tranform">
+            <Grid HorizontalAlignment="Stretch"  ShowGridLines="True">
+                <Grid.ColumnDefinitions >
+                    <ColumnDefinition Width="2*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock VerticalAlignment="Center" FontSize="14" Grid.Column="0" FontWeight="Bold">Cube Size:</TextBlock>
+                <TextBox  Height="25"  VerticalContentAlignment="Center" FontSize="14" Grid.Column="1" HorizontalAlignment="Stretch"  x:Name="tbCubeNumber" TextChanged="tbNumberCell_TextChanged" >128</TextBox>
+            </Grid>
+        </Label>
+        <DockPanel Margin="0,10">
+            <Button  Margin="0,0,5,0"  DockPanel.Dock="Right" HorizontalAlignment="Right" x:Name="btCancel">CANCEL</Button>
+            <Button   Margin="5,0" DockPanel.Dock="Left" HorizontalAlignment="Left" x:Name="btTranformer" Click="btTranformer_Click">TRANSFORM</Button>
+        </DockPanel>
+        
+    </StackPanel>
+</Window>

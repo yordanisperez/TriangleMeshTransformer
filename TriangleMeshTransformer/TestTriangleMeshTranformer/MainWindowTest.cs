@@ -4,6 +4,7 @@ using System.Windows;
 using TriangleMeshTransformer;
 using g3;
 using System.Collections.Generic;
+using System.Windows.Controls;
 
 namespace TestTriangleMeshTransformer
 {
@@ -92,6 +93,28 @@ namespace TestTriangleMeshTransformer
             mainWindow.addMesh("OneMesh");
             //Is add the meh correcty
             Assert.AreEqual(true, mainWindow.existMesh("OneMesh"));
+        }
+
+        [TestMethod]
+        public void TestDeleteMeshButton_Click()
+        {
+
+            mainWindow.addMesh("OneMesh");
+            //Is add the meh correcty
+            ShowVisualMesh showComponent = new ShowVisualMesh
+            {
+                filenameMesh= "OneMesh",
+                parentMesh= new Label(),
+            };
+            Button btnDel = new Button
+            {
+                Tag = showComponent,
+            };
+
+            // Simulate the DeleteMeshButton_Click event
+            mainWindow.TestDeleteMeshButton_Click(btnDel, new RoutedEventArgs());
+
+            Assert.AreEqual(false, mainWindow.existMesh("OneMesh"));
         }
     }
 }

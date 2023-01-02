@@ -113,6 +113,15 @@ namespace TriangleMeshTransformer
     }
 
     /// <summary>
+    /// filenameMesh: is name file associad to mesh
+    /// parentMesh: is the object container 
+    /// </summary>
+    public struct ShowVisualMesh{
+       public string filenameMesh;
+       public Object parentMesh;
+    }
+
+    /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
@@ -121,6 +130,7 @@ namespace TriangleMeshTransformer
       public  string filePathOpen=@"C:\";
       public IOpenFileDialog openFileDialog;
       public iCallMethodStatic staticCall ;
+        private int countMesh = 0;
 
         public MainWindow()
         {
@@ -172,9 +182,43 @@ namespace TriangleMeshTransformer
             }
         }
 
-        
-        public void addMesh(string pPath)
+        public void TestDeleteMeshButton_Click(object sender, RoutedEventArgs e)
         {
+            DeleteMeshButton_Click(sender, e);
+        }
+        protected void DeleteMeshButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button btnDelete=(Button) sender;
+            ShowVisualMesh showComponent = (ShowVisualMesh) btnDelete.Tag;
+            bool resultDelete= managerMesh.deleteTriangleMesh(showComponent.filenameMesh);
+            
+            if (resultDelete)
+            {
+                //delete the container of MainForm
+                string message = string.Format("The mesh {0} deleted", showComponent.filenameMesh);
+                spMesh.Children.Remove((Label)showComponent.parentMesh);
+                staticCall.Show(message, "Mesh Deleted", MessageBoxButton.OK);
+
+            }
+            
+        }
+
+        protected void TranformerMeshButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button btnTranf = (Button)sender;
+            //get data of mesh 
+            ShowVisualMesh showComponent = (ShowVisualMesh)btnTranf.Tag;
+            
+           //instance windows tranformer and pass data mesh
+            WindowsTransformerMesh winTranf = new WindowsTransformerMesh(((CGeometry)managerMesh.getSimpleMesh(showComponent.filenameMesh)));
+           if ((bool)winTranf.ShowDialog())
+            {
+                addMesh( showComponent.filenameMesh+ countMesh.ToString(),false, new CGeometry(winTranf.meshTranf));
+            }
+        }
+        public void addMesh(string pPath, bool pSaveFile =true, CGeometry meshTranf=null)
+        {
+ 
             //If pPath  is null or empty
             if (string.IsNullOrEmpty(pPath))
             {
@@ -188,18 +232,32 @@ namespace TriangleMeshTransformer
                 return;
             }
             //Loading mesh
-            
-            DMesh3 mesh = staticCall.ReadMesh(pPath);
-            if (!managerMesh.AddTrianglesMesh(pPath, new CGeometry(mesh)))
+            CGeometry mesh;
+            if (pSaveFile) {
+                mesh = new CGeometry( staticCall.ReadMesh(pPath));
+            }
+            else
+            {
+                mesh = meshTranf;
+            }
+           
+            if (!managerMesh.AddTrianglesMesh(pPath, mesh))
                 return;
 
-
+            countMesh++;
             //Creation of component
             Label lbWrapper = new Label
             {
                 BorderBrush = Brushes.Gray,
                 BorderThickness = new Thickness(1),
             };
+            //bingMesh to set Tags each Button
+            ShowVisualMesh bingMesh = new ShowVisualMesh
+            {
+                filenameMesh = pPath,
+                parentMesh = lbWrapper,
+            };
+
             StackPanel spWrapper = new StackPanel
             {
                 Orientation = Orientation.Horizontal,
@@ -224,19 +282,23 @@ namespace TriangleMeshTransformer
             WrapPanel wrapBtns = new WrapPanel();
 
             Button btnShow = new Button {
-                Tag = pPath,
+                Tag = bingMesh,
             };
             Button btnTranf = new Button
             {
-                Tag = pPath,
+                Tag = bingMesh,
             };
+            btnTranf.Click += new RoutedEventHandler(TranformerMeshButton_Click);
             Button btnDelete = new Button
             {
-                Tag = pPath,
+                Tag = bingMesh,
             };
+            btnDelete.Click += new RoutedEventHandler(DeleteMeshButton_Click);
+
             Button btnSave = new Button()
             {
-                Tag = pPath,
+                Tag = bingMesh,
+                IsEnabled= !pSaveFile,
             };
 
             BitmapImage bitmapShow = new BitmapImage();

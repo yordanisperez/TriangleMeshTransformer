@@ -62,6 +62,9 @@
     <Compile Include="TriangleMeshManager\Geometry\CSimpleMesh.cs" />
     <Compile Include="TriangleMeshManager\Geometry\ISimpleMesh.cs" />
     <Compile Include="TriangleMeshManager\TriangleMeshManager.cs" />
+    <Compile Include="WindowsTransformerMesh.xaml.cs">
+      <DependentUpon>WindowsTransformerMesh.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -74,6 +77,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="WindowsTransformerMesh.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
