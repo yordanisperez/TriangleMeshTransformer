@@ -213,9 +213,42 @@ namespace TriangleMeshTransformer
             WindowsTransformerMesh winTranf = new WindowsTransformerMesh(((CGeometry)managerMesh.getSimpleMesh(showComponent.filenameMesh)));
            if ((bool)winTranf.ShowDialog())
             {
-                addMesh( showComponent.filenameMesh+ countMesh.ToString(),false, new CGeometry(winTranf.meshTranf));
+                
+                // Find the position of the delimiter in the original string
+                int index = showComponent.filenameMesh.IndexOf(@".");
+                // Extract the substring before the delimiter
+                
+                string nameFile = showComponent.filenameMesh.Substring(0, index);
+
+
+                addMesh(nameFile + "_" +countMesh.ToString()+".stl",false, new CGeometry(winTranf.meshTranf));
             }
         }
+
+        protected void SaveMeshButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button btnSave = (Button)sender;
+            //get data of mesh 
+            ShowVisualMesh showComponent = (ShowVisualMesh)btnSave.Tag;
+            try
+            {
+                ((CGeometry)managerMesh.getSimpleMesh(showComponent.filenameMesh)).saveTo(showComponent.filenameMesh);
+
+            }
+            catch (Exception)
+            {
+                staticCall.Show("Error saving file", "Save", MessageBoxButton.OK);
+                return;
+            }
+            btnSave.IsEnabled = false;
+            
+        }
+
+        protected void ShowMeshButton_Click(object sender, RoutedEventArgs e)
+        {
+            staticCall.Show("Aun falta esta caracteristica", "Show Mesh", MessageBoxButton.OK);
+        }
+
         public void addMesh(string pPath, bool pSaveFile =true, CGeometry meshTranf=null)
         {
  
@@ -283,15 +316,19 @@ namespace TriangleMeshTransformer
 
             Button btnShow = new Button {
                 Tag = bingMesh,
+                ToolTip="Show Geometry",
             };
+            btnShow.Click += new RoutedEventHandler(ShowMeshButton_Click);
             Button btnTranf = new Button
             {
                 Tag = bingMesh,
+                ToolTip = "Merging Meshes with Signed Distance Fields",
             };
             btnTranf.Click += new RoutedEventHandler(TranformerMeshButton_Click);
             Button btnDelete = new Button
             {
                 Tag = bingMesh,
+                ToolTip = "Delete mesh from app",
             };
             btnDelete.Click += new RoutedEventHandler(DeleteMeshButton_Click);
 
@@ -299,7 +336,9 @@ namespace TriangleMeshTransformer
             {
                 Tag = bingMesh,
                 IsEnabled= !pSaveFile,
+                ToolTip = "Save mesh to hard disk",
             };
+            btnSave.Click += new RoutedEventHandler(SaveMeshButton_Click);
 
             BitmapImage bitmapShow = new BitmapImage();
             bitmapShow.BeginInit();

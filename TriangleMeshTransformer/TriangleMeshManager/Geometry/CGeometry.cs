@@ -66,7 +66,7 @@ namespace Geometry
         /// <param name="pPatch"> rute sample D://myfile.stl</param>
        public void saveTo(string pPatch)
         {
-            DMesh3 mesh_copy = (DMesh3)  Clone();
+            DMesh3 mesh_copy = new DMesh3(mesh)  ;
             WriteOptions w = new WriteOptions
             {
                 bWriteBinary = true
