@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,21 @@ using System.Windows.Shapes;
 
 namespace TriangleMeshTransformer
 {
+
+
+    internal static class ResourceAccessor
+    {
+        public static Uri Get(string resourcePath)
+        {
+            var uri = string.Format(
+                "pack://application:,,,/{0};component/{1}"
+                , Assembly.GetExecutingAssembly().GetName().Name
+                , resourcePath
+            );
+
+            return new Uri(uri);
+        }
+    }
     /// <summary>
     /// This class is for can mock to OpenDialog from MSTest
     /// </summary>
@@ -36,37 +52,37 @@ namespace TriangleMeshTransformer
     /// </summary>
     public class OpenFileDialogContainer : IOpenFileDialog
     {
-       public OpenFileDialog openFileDialog { get; set; }
+       public OpenFileDialog OpenFileDialog { get; set; }
         public string Filter
         {
-            get => openFileDialog.Filter; set
+            get => OpenFileDialog.Filter; set
             {
-                openFileDialog.Filter =value;
+                OpenFileDialog.Filter =value;
             }
         }
         public string FileName { 
-            get => openFileDialog.FileName; set  {
-                openFileDialog.FileName = value;
+            get => OpenFileDialog.FileName; set  {
+                OpenFileDialog.FileName = value;
             } 
         }
         public string InitialDirectory { 
-            get => openFileDialog.InitialDirectory; set {
-               openFileDialog.InitialDirectory=value;
+            get => OpenFileDialog.InitialDirectory; set {
+               OpenFileDialog.InitialDirectory=value;
             }
         }
 
         public OpenFileDialogContainer(OpenFileDialog pOpenfile)
         {
-            openFileDialog=pOpenfile;
+            OpenFileDialog=pOpenfile;
         }
 
         public bool? ShowDialog()
         {
-            return openFileDialog.ShowDialog();
+            return OpenFileDialog.ShowDialog();
         }
     }
 
-    public interface iCallMethodStatic
+    public interface ICallMethodStatic
     {
         /// <summary>
         /// Read un file from path pFile
@@ -99,7 +115,7 @@ namespace TriangleMeshTransformer
     /// CallMethodStatic is need for Testing the call and can mock
     /// </summary>
     /// 
-    public class CallMethodStatic: iCallMethodStatic
+    public class CallMethodStatic: ICallMethodStatic
     {
         public CallMethodStatic() { }
      public   DMesh3 ReadMesh(String pFile)
@@ -126,10 +142,10 @@ namespace TriangleMeshTransformer
     /// </summary>
     public partial class MainWindow : Window
     {
-      private TriangleMeshManager managerMesh =new TriangleMeshManager();
+      private readonly TriangleMeshManager managerMesh =new TriangleMeshManager();
       public  string filePathOpen=@"C:\";
       public IOpenFileDialog openFileDialog;
-      public iCallMethodStatic staticCall ;
+      public ICallMethodStatic staticCall ;
         private int countMesh = 0;
 
         public MainWindow()
@@ -146,40 +162,15 @@ namespace TriangleMeshTransformer
         /// </summary>
         /// <param name="pHash"> string key of diccionary</param>
         /// <returns> Return true if pPatch in meshs diccionary, otherwise false</returns>
-        public bool existMesh(string pHash)
+        public bool ExistMesh(string pHash)
         {
             return managerMesh.isPathExist(pHash);
           
         }
 
-        public void testMiOpen_Click(object sender, RoutedEventArgs e)
+        public void TestMiOpen_Click(object sender, RoutedEventArgs e)
         {
-            miOpen_Click(sender, e);
-        }
-        private void miOpen_Click(object sender, RoutedEventArgs e)
-        {
-
-            // Set the filter for the file extension
-            openFileDialog.Filter = "Text files (*.stl)|*.stl";
-
-            // Find the position of the delimiter in the original string
-            int index = filePathOpen.IndexOf(@"\");
-            // Extract the substring before the delimiter
-            // Set the initial directory
-            openFileDialog.InitialDirectory = filePathOpen.Substring(0, index);
-
-            // Show the OpenFileDialog and get the result
-            bool? result = openFileDialog.ShowDialog();
-
-            // If the user selected a file and clicked "Open"
-            if (result == true)
-            {
-                // Get the path of the selected file
-                filePathOpen = openFileDialog.FileName;
-                //LoadingFile and create Structure mesh
-                // MessageBox.Show(filePathOpen);
-                addMesh(filePathOpen);
-            }
+            MiOpen_Click(sender, e);
         }
 
         public void TestDeleteMeshButton_Click(object sender, RoutedEventArgs e)
@@ -221,7 +212,7 @@ namespace TriangleMeshTransformer
                 string nameFile = showComponent.filenameMesh.Substring(0, index);
 
 
-                addMesh(nameFile + "_" +countMesh.ToString()+".stl",false, new CGeometry(winTranf.meshTranf));
+                AddMesh(nameFile + "_" +countMesh.ToString()+".stl",false, new CGeometry(winTranf.meshTranf));
             }
         }
 
@@ -249,7 +240,7 @@ namespace TriangleMeshTransformer
             staticCall.Show("Aun falta esta caracteristica", "Show Mesh", MessageBoxButton.OK);
         }
 
-        public void addMesh(string pPath, bool pSaveFile =true, CGeometry meshTranf=null)
+        public void AddMesh(string pPath, bool pSaveFile =true, CGeometry meshTranf=null)
         {
  
             //If pPath  is null or empty
@@ -342,7 +333,7 @@ namespace TriangleMeshTransformer
 
             BitmapImage bitmapShow = new BitmapImage();
             bitmapShow.BeginInit();
-            bitmapShow.UriSource = new Uri("https://pic.onlinewebfonts.com/svg/img_416768.png");
+            bitmapShow.UriSource = ResourceAccessor.Get("images/show.png");// new Uri("https://pic.onlinewebfonts.com/svg/img_416768.png");
             bitmapShow.EndInit();
             Image imgShow = new Image
             {
@@ -352,7 +343,7 @@ namespace TriangleMeshTransformer
 
             BitmapImage bitmapTranf  = new BitmapImage();
             bitmapTranf.BeginInit();
-            bitmapTranf.UriSource = new Uri("https://pic.onlinewebfonts.com/svg/img_335840.png");
+            bitmapTranf.UriSource = ResourceAccessor.Get("images/transformer.png");//new Uri("https://pic.onlinewebfonts.com/svg/img_335840.png");
             bitmapTranf.EndInit();
             Image imgTranf = new Image
             {
@@ -362,18 +353,20 @@ namespace TriangleMeshTransformer
 
             BitmapImage bitmapDel = new BitmapImage();
             bitmapDel.BeginInit();
-            bitmapDel.UriSource = new Uri("https://pic.onlinewebfonts.com/svg/img_659.png");
+            bitmapDel.UriSource = ResourceAccessor.Get("images/delete.png");//new Uri("https://pic.onlinewebfonts.com/svg/img_659.png");
             bitmapDel.EndInit();
             Image imgDel = new Image
             {
                 Width = 20,
                 Source = bitmapDel,
             };
-
+           
             BitmapImage bitmapSave = new BitmapImage();
             bitmapSave.BeginInit();
-            bitmapSave.UriSource = new Uri("https://pic.onlinewebfonts.com/svg/img_115260.png");
+            bitmapSave.UriSource = ResourceAccessor.Get("images/save.png"); //new Uri("https://pic.onlinewebfonts.com/svg/img_115260.png");
             bitmapSave.EndInit();
+            //TriangleMeshTransformer
+           // var uriSource = new Uri("pack://application:,,,TriangleMeshTransformer;/save.png");
             Image imgSave = new Image
             {
                 Width = 20,
@@ -426,5 +419,32 @@ namespace TriangleMeshTransformer
            </ Label >*/
 
         }
+
+        private void MiOpen_Click(object sender, RoutedEventArgs e)
+        {
+
+            // Set the filter for the file extension
+            openFileDialog.Filter = "Text files (*.stl)|*.stl";
+
+            // Find the position of the delimiter in the original string
+            int index = filePathOpen.IndexOf(@"\");
+            // Extract the substring before the delimiter
+            // Set the initial directory
+            openFileDialog.InitialDirectory = filePathOpen.Substring(0, index);
+
+            // Show the OpenFileDialog and get the result
+            bool? result = openFileDialog.ShowDialog();
+
+            // If the user selected a file and clicked "Open"
+            if (result == true)
+            {
+                // Get the path of the selected file
+                filePathOpen = openFileDialog.FileName;
+                //LoadingFile and create Structure mesh
+                // MessageBox.Show(filePathOpen);
+                AddMesh(filePathOpen);
+            }
+        }
+
     }
 }

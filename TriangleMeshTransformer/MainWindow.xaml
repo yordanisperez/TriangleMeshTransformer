@@ -9,9 +9,9 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
-                <MenuItem x:Name="miOpen" Header="Open" Click="miOpen_Click" >
+                <MenuItem x:Name="MiOpen" Header="Open"  Click="MiOpen_Click" >
                     <MenuItem.Icon>
-                        <Image Source="https://pic.onlinewebfonts.com/svg/img_676.png"></Image>
+                        <Image Source="images/openfile.png"></Image>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
@@ -19,8 +19,8 @@
         <StackPanel>
             <ToolBarTray DockPanel.Dock="Top">
                 <ToolBar>
-                    <Button x:Name="btOpenFile" ToolTip="Open file" Click="miOpen_Click">
-                        <Image Width="20" Source="https://pic.onlinewebfonts.com/svg/img_676.png"></Image>
+                    <Button x:Name="btOpenFile" ToolTip="Open file" Click="MiOpen_Click">
+                        <Image Width="20" Source="images/openfile.png"></Image>
                     </Button>
                     <Separator></Separator>
                 </ToolBar>

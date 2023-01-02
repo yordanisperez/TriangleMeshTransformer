@@ -21,8 +21,8 @@ namespace TriangleMeshTransformer
     /// </summary>
     public partial class WindowsTransformerMesh : Window
     {
-        private CGeometry geometry;
-        public iCallMethodStatic staticCall;
+        private readonly CGeometry geometry;
+        public ICallMethodStatic staticCall;
         public DMesh3 meshTranf=null;
         public WindowsTransformerMesh(CGeometry pGeometry)
         {
@@ -31,12 +31,10 @@ namespace TriangleMeshTransformer
             staticCall = new CallMethodStatic();
         }
 
-        private void tbNumberCell_TextChanged(object sender, TextChangedEventArgs e)
+        private void TBNumberCell_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
-            int iValue = -1;
-
-            if (Int32.TryParse(textBox.Text, out iValue) == false)
+            if (Int32.TryParse(textBox.Text, out _) == false)
             {
                 TextChange textChange = e.Changes.ElementAt<TextChange>(0);
                 int iAddedLength = textChange.AddedLength;
@@ -46,7 +44,7 @@ namespace TriangleMeshTransformer
             }
         }
 
-        private void btTranformer_Click(object sender, RoutedEventArgs e)
+        private void BTTranformer_Click(object sender, RoutedEventArgs e)
         {
             if (geometry == null)
             {

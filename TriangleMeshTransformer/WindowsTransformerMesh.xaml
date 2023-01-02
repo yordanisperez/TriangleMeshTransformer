@@ -15,7 +15,7 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock VerticalAlignment="Center"  FontSize="14" FontWeight="Bold" Grid.Column="0">Number Cell:</TextBlock>
-                <TextBox Height="25"  VerticalContentAlignment="Center"  FontSize="14" Grid.Column="1" HorizontalAlignment="Stretch"  x:Name="tbNumberCell" TextChanged="tbNumberCell_TextChanged" >128</TextBox>
+                <TextBox Height="25"  VerticalContentAlignment="Center"  FontSize="14" Grid.Column="1" HorizontalAlignment="Stretch"  x:Name="tbNumberCell" TextChanged="TBNumberCell_TextChanged" >128</TextBox>
             </Grid>
         </Label>
         <Label HorizontalContentAlignment="Stretch" FontSize="12" ToolTip="Set cube size in this tranform">
@@ -26,12 +26,12 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock VerticalAlignment="Center" FontSize="14" Grid.Column="0" FontWeight="Bold">Cube Size:</TextBlock>
-                <TextBox  Height="25"  VerticalContentAlignment="Center" FontSize="14" Grid.Column="1" HorizontalAlignment="Stretch"  x:Name="tbCubeNumber" TextChanged="tbNumberCell_TextChanged" >128</TextBox>
+                <TextBox  Height="25"  VerticalContentAlignment="Center" FontSize="14" Grid.Column="1" HorizontalAlignment="Stretch"  x:Name="tbCubeNumber" TextChanged="TBNumberCell_TextChanged" >128</TextBox>
             </Grid>
         </Label>
         <DockPanel Margin="0,10">
             <Button  Margin="0,0,5,0"  DockPanel.Dock="Right" HorizontalAlignment="Right" x:Name="btCancel">CANCEL</Button>
-            <Button   Margin="5,0" DockPanel.Dock="Left" HorizontalAlignment="Left" x:Name="btTranformer" Click="btTranformer_Click">TRANSFORM</Button>
+            <Button   Margin="5,0" DockPanel.Dock="Left" HorizontalAlignment="Left" x:Name="btTranformer" Click="BTTranformer_Click">TRANSFORM</Button>
         </DockPanel>
         
     </StackPanel>

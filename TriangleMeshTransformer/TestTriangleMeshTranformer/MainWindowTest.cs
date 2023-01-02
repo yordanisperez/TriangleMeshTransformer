@@ -20,7 +20,7 @@ namespace TestTriangleMeshTransformer
         MainWindow mainWindow = null;
 
         [ClassInitialize]
-        public static void InitSampleTesting(TestContext testContext)
+        public static void InitSampleTesting(TestContext _)
         {
             vertices = new List<Vector3d>
               {
@@ -54,7 +54,7 @@ namespace TestTriangleMeshTransformer
             // fileDialogMock.SetupGet(x => x.FileNames).Returns(@"C:\myfile.txt");
 
             //create mock static class
-            var myCallMethodStaticMock = new Mock<iCallMethodStatic>();
+            var myCallMethodStaticMock = new Mock<ICallMethodStatic>();
             //add method for create mesh
             myCallMethodStaticMock.Setup(x => x.ReadMesh(It.IsAny<string>())).Returns(meshTest);
             myCallMethodStaticMock.Setup(x => x.Show(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MessageBoxButton>())).Returns(MessageBoxResult.Yes);
@@ -62,7 +62,7 @@ namespace TestTriangleMeshTransformer
             mainWindow = new MainWindow
             {
                 // Set the staticCall property to the mock
-                staticCall = (iCallMethodStatic)myCallMethodStaticMock.Object,
+                staticCall = (ICallMethodStatic)myCallMethodStaticMock.Object,
                  // Set the FileDialog property to the mock
                 openFileDialog = (IOpenFileDialog)fileDialogMock.Object
             };
@@ -81,7 +81,7 @@ namespace TestTriangleMeshTransformer
         public void TestMiOpen_Click()
         {
             // Simulate the OpenFileButton_Click event
-            mainWindow.testMiOpen_Click(new object(), new RoutedEventArgs());
+            mainWindow.TestMiOpen_Click(new object(), new RoutedEventArgs());
             // Verify that the file path returned by the mock was used to set the FilePath property
             Assert.AreEqual(@"C:\myfile.txt", mainWindow.filePathOpen);
 
@@ -90,16 +90,16 @@ namespace TestTriangleMeshTransformer
        public void TestAddMesh()
         {
 
-            mainWindow.addMesh("OneMesh");
+            mainWindow.AddMesh("OneMesh");
             //Is add the meh correcty
-            Assert.AreEqual(true, mainWindow.existMesh("OneMesh"));
+            Assert.AreEqual(true, mainWindow.ExistMesh("OneMesh"));
         }
 
         [TestMethod]
         public void TestDeleteMeshButton_Click()
         {
 
-            mainWindow.addMesh("OneMesh");
+            mainWindow.AddMesh("OneMesh");
             //Is add the meh correcty
             ShowVisualMesh showComponent = new ShowVisualMesh
             {
@@ -114,7 +114,7 @@ namespace TestTriangleMeshTransformer
             // Simulate the DeleteMeshButton_Click event
             mainWindow.TestDeleteMeshButton_Click(btnDel, new RoutedEventArgs());
 
-            Assert.AreEqual(false, mainWindow.existMesh("OneMesh"));
+            Assert.AreEqual(false, mainWindow.ExistMesh("OneMesh"));
         }
     }
 }
