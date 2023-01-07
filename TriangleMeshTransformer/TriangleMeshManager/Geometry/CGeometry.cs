@@ -7,13 +7,14 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Xml.Linq;
-
+using TriangleMeshTransformer;
 
 namespace Geometry
 {
-    public class CGeometry : ICloneable, ISimpleMesh<Vector3d, Index3i>
+    public class CGeometry : ICloneable, ISimpleMesh<Vector3d, Index3i>, IGeometryWPF
     {
         private  DMesh3 mesh ;
 
@@ -108,7 +109,9 @@ namespace Geometry
             c.Bounds.Expand(3 * c.CubeSize);
 
             c.Generate();
-
+            MeshNormals meshNormal = new MeshNormals(c.Mesh);
+            meshNormal.Compute();
+            meshNormal.CopyTo(c.Mesh);
             return  c.Mesh;
         }
 
@@ -165,6 +168,61 @@ namespace Geometry
 
         }
 
+        public MeshGeometry3D GetGeometryWPF()
+        {
+            MeshGeometry3D myMeshGeometry3D = new MeshGeometry3D();
+
+
+            Vector3DCollection myNormalCollection = new Vector3DCollection();
+            Point3DCollection myPositionCollection = new Point3DCollection();
+            PointCollection myTextureCoordinatesCollection = new PointCollection();
+            Int32Collection myTriangleIndicesCollection = new Int32Collection();
+
+
+
+            Action<int> actionAddVertex = delegate (int vid)
+            {
+                Vector3f norm = mesh.GetVertexNormal(vid);
+                myNormalCollection.Add(new Vector3D((double)norm[0], (double)norm[1], (double)norm[2]));
+                Vector3d vertex = mesh.GetVertex(vid);
+                // Create a collection of vertex positions for the MeshGeometry3D.
+                myPositionCollection.Add(new Point3D(vertex[0], vertex[1], vertex[2]));
+            };
+            foreach (int item in mesh.VertexIndices())
+            {
+                actionAddVertex(item);
+            }
+
+            myMeshGeometry3D.Normals = myNormalCollection;
+
+            // Create a collection of vertex positions for the MeshGeometry3D.
+
+            myMeshGeometry3D.Positions = myPositionCollection;
+
+            // Create a collection of texture coordinates for the MeshGeometry3D.
+            myMeshGeometry3D.TextureCoordinates = myTextureCoordinatesCollection;
+
+            // Create a collection of triangle indices for the MeshGeometry3D.
+            Action<int> actionAddTriangles = delegate (int tid)
+            {
+                Index3i indexTri = mesh.GetTriangle(tid);
+                for (int i = 0; i < 3; i++)
+                {
+                    myTriangleIndicesCollection.Add(indexTri[i]);
+                    Vector2f vertexUV = mesh.GetVertexUV(indexTri[i]);
+                    myTextureCoordinatesCollection.Add(new Point(vertexUV[0], vertexUV[1]));
+
+                }
+            };
+
+            foreach (int item in mesh.TriangleIndices())
+            {
+                actionAddTriangles(item);
+            }
+            myMeshGeometry3D.TriangleIndices = myTriangleIndicesCollection;
+
+            return myMeshGeometry3D;
+        }
     }
 
 }

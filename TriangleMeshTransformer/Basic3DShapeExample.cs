@@ -74,83 +74,8 @@ namespace TriangleMeshTransformer
 
             // The geometry specifes the shape of the 3D plane. In this sample, a flat sheet
             // is created.
-            MeshGeometry3D myMeshGeometry3D = new MeshGeometry3D();
-
-            
-            Vector3DCollection myNormalCollection = new Vector3DCollection();
-            Point3DCollection myPositionCollection = new Point3DCollection();
-            PointCollection myTextureCoordinatesCollection = new PointCollection();
-
-            bool abort = false;
-
-            Action<int> actionAddVertex = delegate (int vid)
-            {
-               
-                    if (vid % 100 == 0)
-                {
-                    abort = CancelF();
-                }
-                if (!abort)
-                {
-                    
-                    Vector3f norm = mesh.GetVertexNormal(vid);
-                    myNormalCollection.Add(new Vector3D((double)norm[0], (double)norm[1], (double)norm[2]));
-                    Vector3d vertex = mesh.GetVertex(vid);
-                    // Create a collection of vertex positions for the MeshGeometry3D.
-                    myPositionCollection.Add(new Point3D(vertex[0], vertex[1], vertex[2]));
-                        
-  
-                }
-
-            };
-            foreach (int item in mesh.VertexIndices()) {
-                actionAddVertex(item);
-            } 
-
-            myMeshGeometry3D.Normals = myNormalCollection;
-
-            // Create a collection of vertex positions for the MeshGeometry3D.
-           
-            myMeshGeometry3D.Positions = myPositionCollection;
-
-            // Create a collection of texture coordinates for the MeshGeometry3D.
-            myMeshGeometry3D.TextureCoordinates = myTextureCoordinatesCollection;
-
-            // Create a collection of triangle indices for the MeshGeometry3D.
-            Int32Collection myTriangleIndicesCollection = new Int32Collection();
-            Action<int> actionAddTriangles = delegate (int tid)
-            {
-
-                if (tid % 100 == 0 && CancelF())
-                {
-                    abort = true;
-                }
-
-                if (!abort)
-                {
-                    //Vector3d v = Vector3d.Zero;
-                    //Vector3d v2 = Vector3d.Zero;
-                    //Vector3d v3 = Vector3d.Zero;
-                    //mesh.GetTriVertices(tid, ref v, ref v2, ref v3);
-                    Index3i indexTri =mesh.GetTriangle(tid);
-                    for(int i =0;i<3; i++)
-                    {
-                        myTriangleIndicesCollection.Add(indexTri[i]);
-                        Vector2f vertexUV = mesh.GetVertexUV(indexTri[i]);
-                        myTextureCoordinatesCollection.Add(new Point(vertexUV[0], vertexUV[1]));
-
-                    }
-
-                }
-            };
-
-            foreach (int item in mesh.TriangleIndices()) {
-                actionAddTriangles(item);
-            }         
-            myMeshGeometry3D.TriangleIndices = myTriangleIndicesCollection;
-
             // Apply the mesh to the geometry model.
-            myGeometryModel.Geometry = myMeshGeometry3D;
+            myGeometryModel.Geometry =  pGeometry.GetGeometryWPF();
 
             // The material specifies the material applied to the 3D object. In this sample a
             // linear gradient covers the surface of the 3D object.
@@ -175,14 +100,18 @@ namespace TriangleMeshTransformer
             // Add the group of models to the ModelVisual3d.
             myModelVisual3D.Content = myModel3DGroup;
 
+
+            CBackground background = new CBackground();
+             
+
+            ModelVisual3D visualBackgroud = new ModelVisual3D();
+            visualBackgroud.Content = new GeometryModel3D(background.GetGeometryWPF(axis.Min, axis.Max), new DiffuseMaterial(Brushes.Black));
+            myViewport3D.Children.Add(visualBackgroud);
             //
             myViewport3D.Children.Add(myModelVisual3D);
-
             myViewport3D.MouseDown += MyViewport3D_MouseDown;
             myViewport3D.MouseMove += MyViewport3D_MouseMove;
             myViewport3D.MouseUp += MyViewport3D_MouseUp;
-
-
             // Apply the viewport to the page so it will be rendered.
 
              lbFPS = new Label
@@ -194,7 +123,6 @@ namespace TriangleMeshTransformer
             myViewport3D.Width = Width;
             myViewport3D.Height = 500;
 
-
             // Frame fmviewport = new Frame();
             //fmviewport.Content = myViewport3D;
             stPanel = new StackPanel {
@@ -204,7 +132,6 @@ namespace TriangleMeshTransformer
             stPanel.Children.Add(lbFPS);
             stPanel.Children.Add(myViewport3D);
             this.Content = stPanel;
-
             stopwatch = new Stopwatch();
             stopwatch.Start();
             
@@ -255,15 +182,12 @@ namespace TriangleMeshTransformer
            
 
             myAxisAngleRotation3d.Axis = new Vector3D(mauseMoveClick[1]-startClick[1]  , mauseMoveClick[0]-startClick[0] , 0);
-            myAxisAngleRotation3d.Angle = 1;
+            myAxisAngleRotation3d.Angle = 5;
             myRotateTransform3D.Rotation = myAxisAngleRotation3d;
             transformGroup.Children.Add(myRotateTransform3D);
             myGeometryModel.Transform = transformGroup;
 
-
-
         }
-
         private void MyViewport3D_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             startTranf = true;

@@ -73,6 +73,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Basic3DShapeExample.cs" />
+    <Compile Include="CBackground.cs" />
+    <Compile Include="GeometryWPF.cs" />
+    <Compile Include="IBackground.cs" />
     <Compile Include="PageDraw.xaml.cs">
       <DependentUpon>PageDraw.xaml</DependentUpon>
     </Compile>
