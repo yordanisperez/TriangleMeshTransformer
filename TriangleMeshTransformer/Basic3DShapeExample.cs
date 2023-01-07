@@ -1,0 +1,273 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media.Media3D;
+using System.Windows.Media;
+using Geometry;
+using g3;
+using static OpenTK.Graphics.OpenGL.GL;
+using System.Security.Cryptography;
+using System.Threading;
+using HelixToolkit.Wpf;
+using System.Diagnostics;
+
+namespace TriangleMeshTransformer
+{
+    
+    public partial class Basic3DShapeExample :Page
+    {
+        bool startTranf = false;
+        Vector2d startClick;
+        GeometryModel3D myGeometryModel;
+        DMesh3 mesh;
+        public Func<bool> CancelF = () => false;
+        Stopwatch stopwatch;
+        Label lbFPS;
+        Viewport3D myViewport3D;
+        StackPanel stPanel;
+         int countFPS = 0;
+        double currentFps = 0;
+        public Basic3DShapeExample(CGeometry pGeometry)
+        {
+             mesh = pGeometry.Mesh;
+            // Declare scene objects.
+            myViewport3D = new Viewport3D();
+            Model3DGroup myModel3DGroup = new Model3DGroup();
+            myGeometryModel = new GeometryModel3D();
+            ModelVisual3D myModelVisual3D = new ModelVisual3D();
+            // Defines the camera used to view the 3D object. In order to view the 3D object,
+            // the camera must be positioned and pointed such that the object is within view
+            // of the camera.
+            PerspectiveCamera myPCamera = new PerspectiveCamera();
+
+            // Specify where in the 3D scene the camera is.
+            AxisAlignedBox3d axis= mesh.GetBounds();
+            //Set Camera in position central to max depth
+           
+
+            Vector3d ptPositionCamera = new Vector3d(axis.Center[0], axis.Center[1], axis.Depth*2);
+            myPCamera.Position = new Point3D(ptPositionCamera[0], ptPositionCamera[1], ptPositionCamera[2]);
+            Vector3d ptLook = new Vector3d(axis.Center[0], axis.Center[1], axis.Center[2]);
+            
+            // Specify the direction that the camera is pointing. 
+            Vector3d directionCamera = ptLook - ptPositionCamera;
+            myPCamera.LookDirection = new Vector3D(directionCamera[0], directionCamera[1], directionCamera[2]);
+
+            // Define camera's horizontal field of view in degrees.
+            myPCamera.FieldOfView = 90;
+
+            // Asign the camera to the viewport
+            myViewport3D.Camera = myPCamera;
+            // Define the lights cast in the scene. Without light, the 3D object cannot
+            // be seen. Note: to illuminate an object from additional directions, create
+            // additional lights.
+            DirectionalLight myDirectionalLight = new DirectionalLight();
+            myDirectionalLight.Color = Colors.White;
+            //Hay que valorar cual será la direccion de la luz mas adecuada***************
+            myDirectionalLight.Direction = new Vector3D(-0.61, -0.5, -0.61);
+
+            myModel3DGroup.Children.Add(myDirectionalLight);
+
+            // The geometry specifes the shape of the 3D plane. In this sample, a flat sheet
+            // is created.
+            MeshGeometry3D myMeshGeometry3D = new MeshGeometry3D();
+
+            
+            Vector3DCollection myNormalCollection = new Vector3DCollection();
+            Point3DCollection myPositionCollection = new Point3DCollection();
+            PointCollection myTextureCoordinatesCollection = new PointCollection();
+
+            bool abort = false;
+
+            Action<int> actionAddVertex = delegate (int vid)
+            {
+               
+                    if (vid % 100 == 0)
+                {
+                    abort = CancelF();
+                }
+                if (!abort)
+                {
+                    
+                    Vector3f norm = mesh.GetVertexNormal(vid);
+                    myNormalCollection.Add(new Vector3D((double)norm[0], (double)norm[1], (double)norm[2]));
+                    Vector3d vertex = mesh.GetVertex(vid);
+                    // Create a collection of vertex positions for the MeshGeometry3D.
+                    myPositionCollection.Add(new Point3D(vertex[0], vertex[1], vertex[2]));
+                        
+  
+                }
+
+            };
+            foreach (int item in mesh.VertexIndices()) {
+                actionAddVertex(item);
+            } 
+
+            myMeshGeometry3D.Normals = myNormalCollection;
+
+            // Create a collection of vertex positions for the MeshGeometry3D.
+           
+            myMeshGeometry3D.Positions = myPositionCollection;
+
+            // Create a collection of texture coordinates for the MeshGeometry3D.
+            myMeshGeometry3D.TextureCoordinates = myTextureCoordinatesCollection;
+
+            // Create a collection of triangle indices for the MeshGeometry3D.
+            Int32Collection myTriangleIndicesCollection = new Int32Collection();
+            Action<int> actionAddTriangles = delegate (int tid)
+            {
+
+                if (tid % 100 == 0 && CancelF())
+                {
+                    abort = true;
+                }
+
+                if (!abort)
+                {
+                    //Vector3d v = Vector3d.Zero;
+                    //Vector3d v2 = Vector3d.Zero;
+                    //Vector3d v3 = Vector3d.Zero;
+                    //mesh.GetTriVertices(tid, ref v, ref v2, ref v3);
+                    Index3i indexTri =mesh.GetTriangle(tid);
+                    for(int i =0;i<3; i++)
+                    {
+                        myTriangleIndicesCollection.Add(indexTri[i]);
+                        Vector2f vertexUV = mesh.GetVertexUV(indexTri[i]);
+                        myTextureCoordinatesCollection.Add(new Point(vertexUV[0], vertexUV[1]));
+
+                    }
+
+                }
+            };
+
+            foreach (int item in mesh.TriangleIndices()) {
+                actionAddTriangles(item);
+            }         
+            myMeshGeometry3D.TriangleIndices = myTriangleIndicesCollection;
+
+            // Apply the mesh to the geometry model.
+            myGeometryModel.Geometry = myMeshGeometry3D;
+
+            // The material specifies the material applied to the 3D object. In this sample a
+            // linear gradient covers the surface of the 3D object.
+
+            // Create a horizontal linear gradient with four stops.
+            LinearGradientBrush myHorizontalGradient = new LinearGradientBrush();
+            myHorizontalGradient.StartPoint = new Point(0, 0.5);
+            myHorizontalGradient.EndPoint = new Point(1, 0.5);
+            myHorizontalGradient.GradientStops.Add(new GradientStop(Colors.Yellow, 0.0));
+            myHorizontalGradient.GradientStops.Add(new GradientStop(Colors.Red, 0.25));
+            myHorizontalGradient.GradientStops.Add(new GradientStop(Colors.Blue, 0.75));
+            myHorizontalGradient.GradientStops.Add(new GradientStop(Colors.LimeGreen, 1.0));
+
+            // Define material and apply to the mesh geometries.
+            DiffuseMaterial myMaterial = new DiffuseMaterial(myHorizontalGradient);
+            myGeometryModel.Material = myMaterial;
+
+
+            // Add the geometry model to the model group.
+            myModel3DGroup.Children.Add(myGeometryModel);
+
+            // Add the group of models to the ModelVisual3d.
+            myModelVisual3D.Content = myModel3DGroup;
+
+            //
+            myViewport3D.Children.Add(myModelVisual3D);
+
+            myViewport3D.MouseDown += MyViewport3D_MouseDown;
+            myViewport3D.MouseMove += MyViewport3D_MouseMove;
+            myViewport3D.MouseUp += MyViewport3D_MouseUp;
+
+
+            // Apply the viewport to the page so it will be rendered.
+
+             lbFPS = new Label
+            {
+                Content = "FPS : ",
+
+            };
+            // this.Chil
+            myViewport3D.Width = Width;
+            myViewport3D.Height = 500;
+
+
+            // Frame fmviewport = new Frame();
+            //fmviewport.Content = myViewport3D;
+            stPanel = new StackPanel {
+             Width = Width,
+             Height = Height,
+            };
+            stPanel.Children.Add(lbFPS);
+            stPanel.Children.Add(myViewport3D);
+            this.Content = stPanel;
+
+            stopwatch = new Stopwatch();
+            stopwatch.Start();
+            
+            CompositionTarget.Rendering += CompositionTarget_Rendering;
+        }
+
+        private void CompositionTarget_Rendering(object sender, EventArgs e)
+        {
+            if (countFPS < 1000)
+            {
+                countFPS++;
+                return;
+            }
+            double elapsedTime = stopwatch.ElapsedMilliseconds;
+            double fps = 1000*countFPS / elapsedTime;
+            countFPS = 0;
+            currentFps = fps;
+            lbFPS.Content = String.Format("FPS:{0}",((int)fps));
+            stopwatch.Restart();
+        }
+
+      private void MyViewport3D_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            startTranf = false;
+           
+        }
+
+        private void MyViewport3D_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (!startTranf)
+                return;
+            AxisAlignedBox3d axis = mesh.GetBounds();   
+            Vector3d ptCenter = new Vector3d(axis.Center[0], axis.Center[1], axis.Center[2]);
+            Vector2d mauseMoveClick = new Vector2d(e.GetPosition(myViewport3D).X, e.GetPosition(myViewport3D).Y);
+
+            // Apply a transform to the object. In this sample, a rotation transform is applied,
+            // rendering the 3D object rotated.
+
+            Transform3DGroup transformGroup = new Transform3DGroup();
+            Transform3D tranfCurrent = myGeometryModel.Transform;
+            transformGroup.Children.Add(tranfCurrent);
+
+             RotateTransform3D myRotateTransform3D = new RotateTransform3D();
+            myRotateTransform3D.CenterX = ptCenter[0];
+            myRotateTransform3D.CenterY = ptCenter[1];
+            myRotateTransform3D.CenterZ = ptCenter[2];
+            AxisAngleRotation3D myAxisAngleRotation3d = new AxisAngleRotation3D();
+           
+
+            myAxisAngleRotation3d.Axis = new Vector3D(mauseMoveClick[1]-startClick[1]  , mauseMoveClick[0]-startClick[0] , 0);
+            myAxisAngleRotation3d.Angle = 1;
+            myRotateTransform3D.Rotation = myAxisAngleRotation3d;
+            transformGroup.Children.Add(myRotateTransform3D);
+            myGeometryModel.Transform = transformGroup;
+
+
+
+        }
+
+        private void MyViewport3D_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            startTranf = true;
+            startClick = new Vector2d(e.GetPosition(myViewport3D).X, e.GetPosition(myViewport3D).Y);
+        }
+    }
+}

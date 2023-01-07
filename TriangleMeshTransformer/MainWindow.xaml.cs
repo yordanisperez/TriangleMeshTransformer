@@ -237,7 +237,17 @@ namespace TriangleMeshTransformer
 
         protected void ShowMeshButton_Click(object sender, RoutedEventArgs e)
         {
-            staticCall.Show("Aun falta esta caracteristica", "Show Mesh", MessageBoxButton.OK);
+
+            Button btnShow = (Button)sender;
+
+            //get data of mesh 
+            ShowVisualMesh showComponent = (ShowVisualMesh)btnShow.Tag;
+
+            ShowMeshWindow showMeshWind = new ShowMeshWindow(((CGeometry)managerMesh.getSimpleMesh(showComponent.filenameMesh)));
+
+            showMeshWind.Show();
+
+
         }
 
         public void AddMesh(string pPath, bool pSaveFile =true, CGeometry meshTranf=null)
@@ -305,21 +315,26 @@ namespace TriangleMeshTransformer
             };
             WrapPanel wrapBtns = new WrapPanel();
 
+            Style styBtn=(Style)Application.Current.Resources["TMTButton"];
+
             Button btnShow = new Button {
                 Tag = bingMesh,
-                ToolTip="Show Geometry",
+                ToolTip = "Show Geometry",
+                Style = styBtn,
             };
             btnShow.Click += new RoutedEventHandler(ShowMeshButton_Click);
             Button btnTranf = new Button
             {
                 Tag = bingMesh,
                 ToolTip = "Merging Meshes with Signed Distance Fields",
+                Style = styBtn,
             };
             btnTranf.Click += new RoutedEventHandler(TranformerMeshButton_Click);
             Button btnDelete = new Button
             {
                 Tag = bingMesh,
                 ToolTip = "Delete mesh from app",
+                Style = styBtn,
             };
             btnDelete.Click += new RoutedEventHandler(DeleteMeshButton_Click);
 
@@ -328,6 +343,7 @@ namespace TriangleMeshTransformer
                 Tag = bingMesh,
                 IsEnabled= !pSaveFile,
                 ToolTip = "Save mesh to hard disk",
+                Style = styBtn,
             };
             btnSave.Click += new RoutedEventHandler(SaveMeshButton_Click);
 

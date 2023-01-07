@@ -6,6 +6,11 @@
         xmlns:local="clr-namespace:TriangleMeshTransformer"
         mc:Ignorable="d"
         Title="TriangleMeshTranformer" Height="350" Width="320">
+    <Window.Resources>
+
+
+
+    </Window.Resources>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
@@ -16,7 +21,7 @@
                 </MenuItem>
             </MenuItem>
         </Menu>
-        <StackPanel>
+        <StackPanel Background="{StaticResource TMTBackground}">
             <ToolBarTray DockPanel.Dock="Top">
                 <ToolBar>
                     <Button x:Name="btOpenFile" ToolTip="Open file" Click="MiOpen_Click">

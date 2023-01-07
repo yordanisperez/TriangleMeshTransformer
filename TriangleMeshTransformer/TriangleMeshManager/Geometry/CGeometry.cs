@@ -6,13 +6,18 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media.Media3D;
 using System.Xml.Linq;
+
 
 namespace Geometry
 {
     public class CGeometry : ICloneable, ISimpleMesh<Vector3d, Index3i>
     {
-        private readonly DMesh3 mesh;
+        private  DMesh3 mesh ;
+
+        
 
         public CGeometry(DMesh3 pSimpleMesh)
         {
@@ -24,6 +29,12 @@ namespace Geometry
                 meshNormal.Compute();
                 meshNormal.CopyTo(mesh);
             }
+
+            if (!pSimpleMesh.HasVertexUVs)
+            {
+                mesh.EnableVertexUVs(new Vector2f(0, 0.5));
+            }
+            computeTextureBallProyection();
         }
         public CGeometry(CSimpleMesh pSimpleMesh) {
             DMesh3 resultMesh;
@@ -32,7 +43,12 @@ namespace Geometry
             meshNormal.Compute();
             meshNormal.CopyTo(resultMesh);
             mesh = resultMesh;
-        } 
+            if (!mesh.HasVertexUVs)
+            {
+                mesh.EnableVertexUVs(new Vector2f(0, 0.5));
+            }
+            computeTextureBallProyection();
+        }
 
         IEnumerable<Vector3d> ISimpleMesh<Vector3d, Index3i>.Vertices  {
             get
@@ -57,7 +73,7 @@ namespace Geometry
         /// <returns>object DMesh3 </returns>  
         public object Clone()
         {
-            DMesh3 mesh_copy = new DMesh3(mesh);
+            DMesh3 mesh_copy = new DMesh3(mesh, false,true, true, true); ;
             return new CGeometry(mesh_copy);
         }
         /// <summary>
@@ -94,6 +110,59 @@ namespace Geometry
             c.Generate();
 
             return  c.Mesh;
+        }
+
+        /// <summary>
+        /// get DMesh3
+        /// </summary>
+        public DMesh3 Mesh
+        {
+            get
+            {
+                return mesh;
+
+            }
+        }
+
+        /// <summary>
+        /// Se calcula las coordenadas UI a partir de interpolar la textura en el 
+        /// area total de la geometria utilizando la proyeccion de coordenadas esfericas.
+        /// </summary>
+        public void computeTextureBallProyection()
+        {
+            Vector3d centerBall = new Vector3d(0,0,0);
+
+            Action<int> SumAcc = delegate (int vid)
+            {
+                centerBall+= mesh.GetVertex(vid);
+            };
+            foreach (int item in mesh.VertexIndices())
+            {
+                SumAcc(item);
+            }
+
+            centerBall /= mesh.VertexCount;
+            
+            Dictionary<int,Vector3d> vCenterBall= new Dictionary<int,Vector3d>();
+
+            Action<int> calcVectorNormCenterBall = delegate (int vid)
+            {
+                centerBall += mesh.GetVertex(vid);
+                vCenterBall.Add(vid, ( centerBall- mesh.GetVertex(vid)).Normalized);
+            };
+            foreach (int item in mesh.VertexIndices())
+            {
+                calcVectorNormCenterBall(item);
+            }
+
+            foreach (KeyValuePair<int, Vector3d> element in vCenterBall)
+            {
+               double s = Math.Atan2(element.Value.y, element.Value.x)/2*Math.PI;
+               double t = Math.Atan2(element.Value.z, Math.Sqrt(element.Value.x * element.Value.x + element.Value.y * element.Value.y)) / Math.PI;
+               mesh.SetVertexUV(element.Key, new Vector2f(s, t));
+
+            }
+
         }
 
     }
