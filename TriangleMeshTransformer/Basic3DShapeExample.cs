@@ -9,7 +9,6 @@ using System.Windows.Media.Media3D;
 using System.Windows.Media;
 using Geometry;
 using g3;
-using static OpenTK.Graphics.OpenGL.GL;
 using System.Security.Cryptography;
 using System.Threading;
 using HelixToolkit.Wpf;
@@ -111,6 +110,7 @@ namespace TriangleMeshTransformer
             myViewport3D.Children.Add(myModelVisual3D);
             myViewport3D.MouseDown += MyViewport3D_MouseDown;
             myViewport3D.MouseMove += MyViewport3D_MouseMove;
+           // myViewport3D.MouseMove += QuaternionsMouseMove;
             myViewport3D.MouseUp += MyViewport3D_MouseUp;
             // Apply the viewport to the page so it will be rendered.
 
@@ -163,35 +163,81 @@ namespace TriangleMeshTransformer
         {
             if (!startTranf)
                 return;
-            AxisAlignedBox3d axis = mesh.GetBounds();   
+            AxisAlignedBox3d axis = mesh.GetBounds();
             Vector3d ptCenter = new Vector3d(axis.Center[0], axis.Center[1], axis.Center[2]);
             Vector2d mauseMoveClick = new Vector2d(e.GetPosition(myViewport3D).X, e.GetPosition(myViewport3D).Y);
+
+
 
             // Apply a transform to the object. In this sample, a rotation transform is applied,
             // rendering the 3D object rotated.
 
+               Transform3DGroup transformGroup = new Transform3DGroup();
+               Transform3D tranfCurrent = myGeometryModel.Transform;
+               transformGroup.Children.Add(tranfCurrent);
+
+                RotateTransform3D myRotateTransform3D = new RotateTransform3D();
+               myRotateTransform3D.CenterX = ptCenter[0];
+               myRotateTransform3D.CenterY = ptCenter[1];
+               myRotateTransform3D.CenterZ = ptCenter[2];
+               AxisAngleRotation3D myAxisAngleRotation3d = new AxisAngleRotation3D();
+
+
+               myAxisAngleRotation3d.Axis = new Vector3D(mauseMoveClick[1]-startClick[1]  , mauseMoveClick[0]-startClick[0] , 0);
+               myAxisAngleRotation3d.Angle = 5.0;
+               myRotateTransform3D.Rotation = myAxisAngleRotation3d;
+               transformGroup.Children.Add(myRotateTransform3D);
+               MatrixTransform3D matrixTransform = new MatrixTransform3D(transformGroup.Value);
+               myGeometryModel.Transform = matrixTransform;
+
+
+
+
+        }
+
+        private void QuaternionsMouseMove(object sender, System.Windows.Input.MouseEventArgs  e)
+        {
+
+            if (!startTranf)
+                return;
+            AxisAlignedBox3d axis = mesh.GetBounds();
+            Vector3d ptCenter = new Vector3d(axis.Center[0], axis.Center[1], axis.Center[2]);
+            Vector2d mauseMoveClick = new Vector2d(e.GetPosition(myViewport3D).X, e.GetPosition(myViewport3D).Y);
+
+
+            /*Prueba con quaternions*/
+            Vector3D rotationAxis = new Vector3D(mauseMoveClick[1] - startClick[1], mauseMoveClick[0] - startClick[0], 0);
+            if (rotationAxis.Length == 0)
+                return;
+            //double rotationAngle += 1;
+            Quaternion rotation = new Quaternion(rotationAxis, 5.0);
+            // rotation.
+
+            // Actualiza el quaternion de la QuaternionRotation3D
+            QuaternionRotation3D quaternionRotation = new QuaternionRotation3D(rotation);
+            // quaternionRotation.Quaternion = rotation;
+
+
+
+            // Aplica la transformación al elemento 3D
             Transform3DGroup transformGroup = new Transform3DGroup();
+            RotateTransform3D rotateTranf = new RotateTransform3D(quaternionRotation);
+            rotateTranf.CenterX = ptCenter[0];
+            rotateTranf.CenterY = ptCenter[1];
+            rotateTranf.CenterZ = ptCenter[2];
             Transform3D tranfCurrent = myGeometryModel.Transform;
-            transformGroup.Children.Add(tranfCurrent);
-
-             RotateTransform3D myRotateTransform3D = new RotateTransform3D();
-            myRotateTransform3D.CenterX = ptCenter[0];
-            myRotateTransform3D.CenterY = ptCenter[1];
-            myRotateTransform3D.CenterZ = ptCenter[2];
-            AxisAngleRotation3D myAxisAngleRotation3d = new AxisAngleRotation3D();
            
-
-            myAxisAngleRotation3d.Axis = new Vector3D(mauseMoveClick[1]-startClick[1]  , mauseMoveClick[0]-startClick[0] , 0);
-            myAxisAngleRotation3d.Angle = 5;
-            myRotateTransform3D.Rotation = myAxisAngleRotation3d;
-            transformGroup.Children.Add(myRotateTransform3D);
-            myGeometryModel.Transform = transformGroup;
+            transformGroup.Children.Add(tranfCurrent);
+            transformGroup.Children.Add(rotateTranf);
+            MatrixTransform3D matrixTransform = new MatrixTransform3D(transformGroup.Value);
+            myGeometryModel.Transform = matrixTransform;
 
         }
         private void MyViewport3D_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             startTranf = true;
             startClick = new Vector2d(e.GetPosition(myViewport3D).X, e.GetPosition(myViewport3D).Y);
+            
         }
     }
 }
